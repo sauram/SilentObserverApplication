@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Silent Observer</string>
+    <string name="logout_button_text">Log out</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Log In</string>
+    <string name="hey_new_to_write_it">New to Silent Observer ?</string>
+    <string name="signup">Register Here</string>
+    <string name="reg_button">Register</string>
+    <string name="reg_confirm_password">Confirm Password</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="already_have_an_account2">Already have an account</string>
+    <string name="start_collecting_data_btn_text">Collect Sensor Data</string>
+    <string name="acc_des">Accelerometer Readings</string>
+    <string name="gyro_des">Gyroscope Readings</string>
+    <string name="x_value">x value</string>
+    <string name="y_value">y value</string>
+    <string name="z_value">z value</string>
+    <string name="p_value">p value</string>
+    <string name="q_value">q value</string>
+    <string name="r_value">r value</string>
+</resources>

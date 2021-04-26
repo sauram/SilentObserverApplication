@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "313208995790",
+    "project_id": "silent-observer",
+    "storage_bucket": "silent-observer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:313208995790:android:b45a201b0e4b32193cb59f",
+        "android_client_info": {
+          "package_name": "com.example.silentobserver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "313208995790-tqknqp9228fgk4ofgb6geh17ec66fakp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.silentobserver",
+            "certificate_hash": "0e308f1f138c20cd6d76fa2c15d4d0beb614dbda"
+          }
+        },
+        {
+          "client_id": "313208995790-9317de0iiuurjaef63kpateq51r9r7u2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUF6IHOYDJj4qjdymb7oZUJu1mI5s8KNk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "313208995790-9317de0iiuurjaef63kpateq51r9r7u2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
