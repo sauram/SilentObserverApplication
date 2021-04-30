@@ -19,4 +19,14 @@
     <string name="p_value">p value</string>
     <string name="q_value">q value</string>
     <string name="r_value">r value</string>
+    <string name="magnetoMete">Magnetometer</string>
+    <string name="orientation_text">Orientation (in degree)</string>
+    <string name="lValue">l value</string>
+    <string name="mValue">m value</string>
+    <string name="nValue" />
+    <string name="nValue1">n value</string>
+    <string name="aValue">a value</string>
+    <string name="bValue">b value</string>
+    <string name="cValue">c value</string>
+    <string name="mMeterReading">Magnetometer Readings</string>
 </resources>

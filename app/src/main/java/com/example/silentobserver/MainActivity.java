@@ -1,6 +1,7 @@
 package com.example.silentobserver;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -60,12 +61,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendToCollection() {
-        Intent collectionIntent = new Intent(MainActivity.this, CollectionActivity.class);
-        startActivity(collectionIntent);
-        finish();
+        Intent collectionIntent = new Intent(MainActivity.this, SilentObserverService.class);
+        ContextCompat.startForegroundService(this, collectionIntent);
+        //finish();
     }
 
     private void logout() {
+//        Intent collectionIntent = new Intent(MainActivity.this, SilentObserverService.class);
+//        stopService(collectionIntent);
         firebaseAuth.signOut();
         sendToLogin();
     }

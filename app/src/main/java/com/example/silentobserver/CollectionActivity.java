@@ -50,6 +50,8 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
     //TextViews to display current Gyroscope sensor values.
     private TextView pValue, qValue, rValue;
 
+    private TextView lValue, mValue, nValue, aValue, bValue, cValue;
+
     //local variables
     //float x=0,y=0,z=0,p=0,q=0,r=0;
 
@@ -87,6 +89,16 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
         pValue = (TextView) findViewById(R.id.pValue);
         qValue = (TextView) findViewById(R.id.qValue);
         rValue = (TextView) findViewById(R.id.rValue);
+
+        lValue = (TextView) findViewById(R.id.lValue);
+        mValue = (TextView) findViewById(R.id.mValue);
+        nValue = (TextView) findViewById(R.id.nValue);
+
+        aValue = (TextView) findViewById(R.id.aValue);
+        bValue = (TextView) findViewById(R.id.bValue);
+        cValue = (TextView) findViewById(R.id.cValue);
+
+
 
 
         // Get an instance of the sensor manager.
@@ -156,13 +168,6 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
         currentTime= new Date().getTime();
         //System.out.println(currentTime-startTime);
         if(currentTime-startTime>250){
-            xValue.setText("x value is : " + accelerometerReading[0]);
-            yValue.setText("y value is : " + accelerometerReading[1]);
-            zValue.setText("z value is : " + accelerometerReading[2]);
-
-            pValue.setText("x value is : " + gyroscopeReading[0]);
-            qValue.setText("y value is : " + gyroscopeReading[1]);
-            rValue.setText("z value is : " + gyroscopeReading[2]);
 
             SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
             SensorManager.getOrientation(rotationMatrix, orientationAngles);
@@ -185,7 +190,21 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
             startTime=currentTime;
             //rowCount++;
 
+            xValue.setText("x : " + accelerometerReading[0]);
+            yValue.setText("y : " + accelerometerReading[1]);
+            zValue.setText("z : " + accelerometerReading[2]);
 
+            pValue.setText("x : " + gyroscopeReading[0]);
+            qValue.setText("y : " + gyroscopeReading[1]);
+            rValue.setText("z : " + gyroscopeReading[2]);
+
+            lValue.setText("x : " + magnetometerReading[0]);
+            mValue.setText("y : " + magnetometerReading[1]);
+            nValue.setText("z : " + magnetometerReading[2]);
+
+            aValue.setText("x : " + orientationAngles[0]);
+            bValue.setText("y : " + orientationAngles[1]);
+            cValue.setText("z : " + orientationAngles[2]);
 
         }
         if(counter==128){
@@ -193,7 +212,7 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
 
             Map<String, ArrayList> userMap = new HashMap<>();
             userMap.put(userId,sensorMatrix);
-            firebaseFirestore.collection("NewData/").add(userMap);
+            firebaseFirestore.collection("newData/").add(userMap);
             sensorMatrix.clear();
             rowCount++;
             System.out.println(rowCount);
