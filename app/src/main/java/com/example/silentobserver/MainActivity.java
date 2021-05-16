@@ -29,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private Button logoutButton;
     private Button collectDataButton;
     private Button buttonUrl;
-    private TextView inputUrl;
+    private EditText inputUrl;
     private String URL;
+    private TextView messageToDisplay;
     Context context;
     SharedPreferences sharedPref;
     private static final String ltUrl = "LocalTunnelURL";
@@ -42,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
         logoutButton = (Button) findViewById(R.id.logout_button);
         collectDataButton = (Button) findViewById(R.id.start_collecting_data);
         buttonUrl = (Button) findViewById(R.id.buttonurl);
-        inputUrl = (TextView) findViewById(R.id.input_url);
+        inputUrl = (EditText) findViewById(R.id.input_url);
+        messageToDisplay = (TextView) findViewById(R.id.message_main_activity);
 
         context = this;
         sharedPref = context.getSharedPreferences(getString(R.string.input_url_key), Context.MODE_PRIVATE);
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(ltUrl, URL);
                 editor.commit();                                           // could use editor.apply() for asynchronously updating the disk data
+                messageToDisplay.setText("URL is set. To change enter different url. Thanks!");
                 inputUrl.setText("");
             }
         });
