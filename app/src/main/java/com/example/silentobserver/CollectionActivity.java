@@ -5,14 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +31,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +50,11 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
     private String userId;
     private int rowCount;
 
+    //Shared Preference
+    Context context;
+    SharedPreferences sharedPref ;
+    private static final String ltUrl = "LocalTunnelURL";
+
     //Sensor Manager
     private SensorManager mSensorManager;
 
@@ -44,16 +63,8 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
     private Sensor mSensorGyro;
     private Sensor mSensorMagneticField;
 
-    // TextViews to display current Accelerometer sensor values.
-    private TextView xValue, yValue, zValue;
-
-    //TextViews to display current Gyroscope sensor values.
-    private TextView pValue, qValue, rValue;
-
-    private TextView lValue, mValue, nValue, aValue, bValue, cValue;
-
     //local variables
-    //float x=0,y=0,z=0,p=0,q=0,r=0;
+    private TextView responseText;
 
     private float[] accelerometerReading = new float[3];
     private float[] gyroscopeReading = new float[3];
@@ -67,8 +78,16 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
     long currentTime;
 
     //Matrix to send
-    ArrayList<Float> sensorMatrix = new ArrayList<Float>();
+    //ArrayList<Float> sensorMatrix = new ArrayList<Float>();
+
+    //Json Object to send to server
+    JSONArray jsonArray= new JSONArray();
+
+    //URL //TODO
+    String url;              //make an input button for this
+
     int counter=0;
+    private RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,26 +99,15 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
         firebaseFirestore = FirebaseFirestore.getInstance();
         userId = firebaseAuth.getCurrentUser().getUid();
 
+        context = this;
+        sharedPref = context.getSharedPreferences(getString(R.string.input_url_key), Context.MODE_PRIVATE);
+        url= sharedPref.getString(ltUrl,"");
 
-        // Initialize all view variables.
-        xValue = (TextView) findViewById(R.id.xValue);
-        yValue = (TextView) findViewById(R.id.yValue);
-        zValue = (TextView) findViewById(R.id.zValue);
+        //intialization
+        responseText = (TextView) findViewById(R.id.requestValue);
 
-        pValue = (TextView) findViewById(R.id.pValue);
-        qValue = (TextView) findViewById(R.id.qValue);
-        rValue = (TextView) findViewById(R.id.rValue);
-
-        lValue = (TextView) findViewById(R.id.lValue);
-        mValue = (TextView) findViewById(R.id.mValue);
-        nValue = (TextView) findViewById(R.id.nValue);
-
-        aValue = (TextView) findViewById(R.id.aValue);
-        bValue = (TextView) findViewById(R.id.bValue);
-        cValue = (TextView) findViewById(R.id.cValue);
-
-
-
+        //Volly
+        requestQueue = Volley.newRequestQueue(this);
 
         // Get an instance of the sensor manager.
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -111,18 +119,7 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
         // Get the error message from string resources.
         String sensor_error = "No sensor";
 
-        // If either mSensorAcc or mSensorGyro are null, those sensors
-        // are not available in the device.  Set the text to the error message
-        if (mSensorAcc == null) {
-            xValue.setText(sensor_error);
-            yValue.setText(sensor_error);
-            zValue.setText(sensor_error);
-        }
-        if (mSensorGyro == null) {
-            pValue.setText(sensor_error);
-            qValue.setText(sensor_error);
-            rValue.setText(sensor_error);
-        }
+
    }
 
     @Override
@@ -172,50 +169,69 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
             SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
             SensorManager.getOrientation(rotationMatrix, orientationAngles);
 
-            sensorMatrix.add(accelerometerReading[0]);
-            sensorMatrix.add(accelerometerReading[1]);
-            sensorMatrix.add(accelerometerReading[2]);
-            sensorMatrix.add(gyroscopeReading[0]);
-            sensorMatrix.add(gyroscopeReading[1]);
-            sensorMatrix.add(gyroscopeReading[2]);
-            sensorMatrix.add(magnetometerReading[0]);
-            sensorMatrix.add(magnetometerReading[1]);
-            sensorMatrix.add(magnetometerReading[2]);
-            sensorMatrix.add(orientationAngles[0]);
-            sensorMatrix.add(orientationAngles[1]);
-            sensorMatrix.add(orientationAngles[2]);
+            try {
+                jsonArray.put(accelerometerReading[0]);
+                jsonArray.put(accelerometerReading[1]);
+                jsonArray.put(accelerometerReading[2]);
+                jsonArray.put(gyroscopeReading[0]);
+                jsonArray.put(gyroscopeReading[1]);
+                jsonArray.put(gyroscopeReading[2]);
+                jsonArray.put(magnetometerReading[0]);
+                jsonArray.put(magnetometerReading[1]);
+                jsonArray.put(magnetometerReading[2]);
+                jsonArray.put(orientationAngles[0]);
+                jsonArray.put(orientationAngles[1]);
+                jsonArray.put(orientationAngles[2]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
 
             counter+=1;
             //System.out.println(startTime-currentTime + " ---- " + counter);
             startTime=currentTime;
             //rowCount++;
 
-            xValue.setText("x : " + accelerometerReading[0]);
-            yValue.setText("y : " + accelerometerReading[1]);
-            zValue.setText("z : " + accelerometerReading[2]);
-
-            pValue.setText("x : " + gyroscopeReading[0]);
-            qValue.setText("y : " + gyroscopeReading[1]);
-            rValue.setText("z : " + gyroscopeReading[2]);
-
-            lValue.setText("x : " + magnetometerReading[0]);
-            mValue.setText("y : " + magnetometerReading[1]);
-            nValue.setText("z : " + magnetometerReading[2]);
-
-            aValue.setText("x : " + orientationAngles[0]);
-            bValue.setText("y : " + orientationAngles[1]);
-            cValue.setText("z : " + orientationAngles[2]);
-
         }
         if(counter==128){
             counter=0;
+            JSONObject jsonObject= new JSONObject();
+            try {
+                jsonObject.put("userId", userId);
+                jsonObject.put("values",jsonArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d("URL", url);
+            jsonArray = new JSONArray();
+            JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(
+                    Request.Method.POST,
+                    url,
+                    jsonObject,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.d("response", response.toString());
+                            responseText.setText(response.toString());
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            responseText.setText("Error, while fetching details");
+                        }
+                    }
+            ){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> customHeaders = new HashMap<>();
+                    customHeaders.put("Bypass-Tunnel-Reminder", "True");
+                    return customHeaders;
+                }
+            };
 
-            Map<String, ArrayList> userMap = new HashMap<>();
-            userMap.put(userId,sensorMatrix);
-            firebaseFirestore.collection("newData/").add(userMap);
-            sensorMatrix.clear();
-            rowCount++;
-            System.out.println(rowCount);
+            requestQueue.add(jsonObjectRequest);
+
         }
         //System.out.println(counter);
 

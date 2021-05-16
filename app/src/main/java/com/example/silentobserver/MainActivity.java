@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,6 +13,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,9 +28,12 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private Button logoutButton;
     private Button collectDataButton;
-    private Button temp;
-
-
+    private Button buttonUrl;
+    private TextView inputUrl;
+    private String URL;
+    Context context;
+    SharedPreferences sharedPref;
+    private static final String ltUrl = "LocalTunnelURL";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,15 +41,22 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         logoutButton = (Button) findViewById(R.id.logout_button);
         collectDataButton = (Button) findViewById(R.id.start_collecting_data);
-        temp = (Button) findViewById(R.id.temp);
+        buttonUrl = (Button) findViewById(R.id.buttonurl);
+        inputUrl = (TextView) findViewById(R.id.input_url);
 
-        temp.setOnClickListener(new View.OnClickListener() {
+        context = this;
+        sharedPref = context.getSharedPreferences(getString(R.string.input_url_key), Context.MODE_PRIVATE);
+
+        buttonUrl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                URL = inputUrl.getText().toString();
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(ltUrl, URL);
+                editor.commit();                                           // could use editor.apply() for asynchronously updating the disk data
+                inputUrl.setText("");
             }
         });
-
 
         collectDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 logout();
             }
         });
+
+        System.out.println("Lmao, WORKING - Main Activity");
     }
 
     private void sendToCollection() {

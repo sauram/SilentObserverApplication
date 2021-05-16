@@ -29,4 +29,5 @@
     <string name="bValue">b value</string>
     <string name="cValue">c value</string>
     <string name="mMeterReading">Magnetometer Readings</string>
+    <string name="input_url_key">com.example.SilentObserver.input_url_key</string>
 </resources>
