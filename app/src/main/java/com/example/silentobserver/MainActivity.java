@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     SharedPreferences sharedPref;
     private static final String ltUrl = "LocalTunnelURL";
+    private static final String sentDataCount= "SentDataCount";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
         sharedPref = context.getSharedPreferences(getString(R.string.input_url_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(ltUrl,"No URL has been set yet");
+        messageToDisplay.setText("Previous URL : "+sharedPref.getString(ltUrl,"No Url set") + "\nEnter the Url");
+
+        //for count of data sent
+        //Initializes every time app is installed
+        editor.putInt(sentDataCount, 0);
 
         buttonUrl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(ltUrl, URL);
                 editor.commit();                                           // could use editor.apply() for asynchronously updating the disk data
-                messageToDisplay.setText("URL is set. To change enter different url. Thanks!");
+                messageToDisplay.setText("Current URL : " + sharedPref.getString(ltUrl,URL)  + "\nTo change enter different Url. Thanks!");
                 inputUrl.setText("");
             }
         });

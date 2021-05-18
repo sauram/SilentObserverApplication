@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -25,7 +27,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText registerPasswordConfirm;
     private Button registerButton;
     private TextView registerLoginButton;
-
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
         registerPasswordConfirm = (EditText) findViewById(R.id.reg_confirm_password);
         registerButton = (Button) findViewById(R.id.reg_button);
         registerLoginButton = (TextView) findViewById(R.id.reg_login_txt);
-
         registerLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

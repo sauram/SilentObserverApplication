@@ -54,8 +54,8 @@
 
     <TextView
         android:id="@+id/message_main_activity"
-        android:layout_width="265dp"
-        android:layout_height="71dp"
+        android:layout_width="295dp"
+        android:layout_height="100dp"
         android:text="Server URL hasn't been set yet"
         android:textAlignment="center"
         android:textSize="18sp"

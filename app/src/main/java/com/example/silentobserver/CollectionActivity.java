@@ -3,6 +3,7 @@ package com.example.silentobserver;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,6 +55,7 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
     Context context;
     SharedPreferences sharedPref ;
     private static final String ltUrl = "LocalTunnelURL";
+    private static final String sentDataCount= "SentDataCount";
 
     //Sensor Manager
     private SensorManager mSensorManager;
@@ -83,8 +85,8 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
     //Json Object to send to server
     JSONArray jsonArray= new JSONArray();
 
-    //URL //TODO
-    String url;              //make an input button for this
+    //URL
+    String url;
 
     int counter=0;
     private RequestQueue requestQueue;
@@ -99,14 +101,15 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
         firebaseFirestore = FirebaseFirestore.getInstance();
         userId = firebaseAuth.getCurrentUser().getUid();
 
+        // Shared preference
         context = this;
         sharedPref = context.getSharedPreferences(getString(R.string.input_url_key), Context.MODE_PRIVATE);
         url= sharedPref.getString(ltUrl,"");
 
-        //intialization
+        // Initialization
         responseText = (TextView) findViewById(R.id.requestValue);
 
-        //Volly
+        // Volley
         requestQueue = Volley.newRequestQueue(this);
 
         // Get an instance of the sensor manager.
@@ -204,32 +207,123 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
             }
             Log.d("URL", url);
             jsonArray = new JSONArray();
-            JsonObjectRequest jsonObjectRequest= new JsonObjectRequest(
-                    Request.Method.POST,
-                    url,
-                    jsonObject,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.d("response", response.toString());
-                            responseText.setText(response.toString());
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            responseText.setText("Error, while fetching details");
-                        }
-                    }
-            ){
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> customHeaders = new HashMap<>();
-                    customHeaders.put("Bypass-Tunnel-Reminder", "True");
-                    return customHeaders;
-                }
-            };
+            JsonObjectRequest jsonObjectRequest = null;
 
+            int currentSentDataCount = sharedPref.getInt(sentDataCount,0);
+            System.out.println("CURRENTSENTDATACOUNT: "+ currentSentDataCount);
+
+            if(currentSentDataCount<2000){
+                String tempURL = url + "/save";
+                jsonObjectRequest= new JsonObjectRequest(
+                        Request.Method.POST,
+                        tempURL,
+                        jsonObject,
+                        new Response.Listener<JSONObject>() {
+                            @SuppressLint("SetTextI18n")
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    Log.d("response", response.get("response").toString());
+                                    responseText.setText("Application is collecting the sensors data.\n\n"+
+                                            "Current data sent count after application installation: "+ currentSentDataCount);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                responseText.setText("Error, while fetching details");
+                            }
+                        }
+                ){
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        HashMap<String, String> customHeaders = new HashMap<>();
+                        customHeaders.put("Bypass-Tunnel-Reminder", "True");
+                        return customHeaders;
+                    }
+                };
+            }else if(currentSentDataCount==2000){
+                String tempURL = url + "/model";
+                jsonObjectRequest= new JsonObjectRequest(
+                        Request.Method.POST,
+                        tempURL,
+                        jsonObject,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    Log.d("response", response.get("response").toString());
+                                    responseText.setText("Model is being created.\n\nKindly Wait!");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                responseText.setText("Error, while fetching details");
+                            }
+                        }
+                ){
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        HashMap<String, String> customHeaders = new HashMap<>();
+                        customHeaders.put("Bypass-Tunnel-Reminder", "True");
+                        return customHeaders;
+                    }
+                };
+
+            }else if(currentSentDataCount>2100){
+                String tempURL = url + "/result";
+                jsonObjectRequest= new JsonObjectRequest(
+                        Request.Method.POST,
+                        tempURL,
+                        jsonObject,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    Log.d("response", response.get("response").toString());
+                                    String result = response.getString("response");
+                                    if(result=="Malicious"){
+                                        responseText.setText("Result is: "+response.get("response").toString());
+                                        //TODO
+                                        //Lock the screen
+                                    }else if(result == "Non-Malicious"){
+                                        responseText.setText("Result is: "+response.get("response").toString());
+                                        //Do Nothing
+                                    }else{
+                                        responseText.setText("Model hasn't been created yet.\n\nKindly Wait!");
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                responseText.setText("Error, while fetching details");
+                            }
+                        }
+                ){
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        HashMap<String, String> customHeaders = new HashMap<>();
+                        customHeaders.put("Bypass-Tunnel-Reminder", "True");
+                        return customHeaders;
+                    }
+                };
+
+            }
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt(sentDataCount, currentSentDataCount+1);
+            editor.apply();                                  //can use editor.commit() also
             requestQueue.add(jsonObjectRequest);
 
         }
