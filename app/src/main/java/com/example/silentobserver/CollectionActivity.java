@@ -167,7 +167,7 @@ public class CollectionActivity extends AppCompatActivity implements SensorEvent
 
         currentTime= new Date().getTime();
         //System.out.println(currentTime-startTime);
-        if(currentTime-startTime>250){
+        if(currentTime-startTime>100){
 
             SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
             SensorManager.getOrientation(rotationMatrix, orientationAngles);
