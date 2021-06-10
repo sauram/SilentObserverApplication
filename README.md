@@ -1,4 +1,4 @@
-DESCRIPTION
+Description
 
 An implicit and continuous authentication application designed to provide addtional security beyond the usual primary security check( passcode/ Biometric security)
 It relies on Deep Learning techniques to provide suitable output from sensor data.
