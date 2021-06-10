@@ -14,4 +14,4 @@ How to use
 6. Once the user model is created, user authentication phase will be acti
 
 
-json file required for firebase access is deleted for security concerns.
+NOTE: Json file required for firebase access is deleted for security concerns.
