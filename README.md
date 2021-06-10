@@ -12,3 +12,6 @@ How to use
 4. A Silent Observer Service should be seen running  in the notification bar. Tap on it to view the current sensory input reading being recorded ( UPDATE: You can only see this in Stage-1 app)
 5. Let the app run in the background (with the device being connected to the internet) for proper data collection for user registration phase.
 6. Once the user model is created, user authentication phase will be acti
+
+
+json file required for firebase access is deleted for security concerns.
